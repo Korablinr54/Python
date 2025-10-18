@@ -113,3 +113,25 @@ engine = create_engine("postgresql+psycopg2://postgres:postgres@localhost/postgr
 class Base(DeclarativeBase):
     pass
 ```
+
+## Объявление класса + метаданные
+```python
+class Client(Base): # создание модели, наследуется от нашего базового класса
+    __tablename__ = "clients" # имя таблицы в БД
+    __table_args__ = {"schema": "test"} # таблица находится в схеме test (не в public)
+    
+    # аннотация типа
+    id: Mapped[uuid.UUID] = mapped_column(
+        UUID, # тип в БД (PostgreSQL UUID)
+        primary_key=True, # это первичный ключ
+        server_default=text("gen_random_uuid()") #значение по умолчанию генерируется на стороне БД
+    )
+
+    # Это блок определения полей модели!
+    name: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    email: Mapped[str | None] = mapped_column(String(100), nullable=True, unique=True)
+    phone: Mapped[int | None] = mapped_column(Integer, nullable=True, unique=True)
+    add_phone: Mapped[list[int] | None] = mapped_column(ARRAY(Integer), nullable=True)
+    worksheet_json: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    worksheet_jsonb: Mapped[dict | None] = mapped_column(JSONB, nullable=True)
+```
