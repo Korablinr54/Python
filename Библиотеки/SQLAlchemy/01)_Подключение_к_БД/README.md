@@ -96,3 +96,20 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, Session
 # Стандартная библиотера python
 import uuid
 ```
+
+## Создание подключения к БД
+После импорта необходимых компонентов нужно настроить подключение в базе.  
+```python
+engine = create_engine("postgresql+psycopg2://postgres:postgres@localhost/postgres")
+```
+
+## Создание базового класса
+Что дает наследование от **Base**:  
+- **Общие метаданные** - все таблицы в одном месте  
+- **Авторегистрация** - модели автоматически регистрируются  
+- **Единая точка управления** - можно добавить общую логику  
+
+```python
+class Base(DeclarativeBase):
+    pass
+```
