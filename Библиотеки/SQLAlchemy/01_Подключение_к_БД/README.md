@@ -135,3 +135,17 @@ class Client(Base): # создание модели, наследуется от
     worksheet_json: Mapped[dict | None] = mapped_column(JSON, nullable=True)
     worksheet_jsonb: Mapped[dict | None] = mapped_column(JSONB, nullable=True)
 ```
+
+## Выполняем запрос
+```python
+# Создание сессии для работы с базой данных
+with Session(engine) as session:
+
+    # Выполнение запроса к базе данных
+    clients = session.query(Client).all()
+    
+    # Итерация по всем найденным клиентам
+    for client in clients:
+     # Вывод информации о каждом клиенте
+        print(f"Имя: {client.name}, Email: {client.email}, Телефон: {client.phone}")
+```
