@@ -6,7 +6,7 @@
 - Прописать для класса атрибут `__tablename__`, указывающий на реальное имя таблицы в базе данных.  
 - Определить все столбцы, используя аннотации типов в сочетании с функцией `mapped_column(...)`.  
 
-Пример:
+## Пример:
 ```python
 # импортируем необходимые компоненты
 from sqlalchemy import create_engine, String, Integer, JSON, text
@@ -28,3 +28,13 @@ class Album(Base):
     Title: Mapped[str] = mapped_column(String(160))
     ArtistId: Mapped[int] = mapped_column(Integer)
 ```
+
+Что здесь происходит:  
+- **Album** — это Python-класс, представляющий таблицу Album.  
+- **AlbumId** — это целочисленный столбец с флагом primary_key=True, то есть это уникальный идентификатор строки.  
+- **Title** — это строковое поле длиной до 160 символов.  
+- **ArtistId** — это целочисленный столбец для связи с другими таблицами.  
+
+## Синтаксис
+Аннотация `AlbumId: Mapped[int]` говорит: поле **AlbumId** — в БД это поле типа `int`.  
+Функция `mapped_column(...)` свяжет поле с типом поля в БД (Integer, String, DateTime, и т.д.) и дополнительнйо информацией по полю (`primary_key`, `nullable`, `default` и т.д.).
