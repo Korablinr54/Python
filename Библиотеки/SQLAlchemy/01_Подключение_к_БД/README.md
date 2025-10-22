@@ -14,6 +14,7 @@
 ```python
 engine = create_engine("dialect+driver://user:password@host:port/dbname")
 ```  
+
 **SQLAlchemy** предоставляет унифицированный API, но для работы с конкретными СУБД требуются соответствующие драйверы.  
 
 Например, создадим подключение к локальной БД Postgres:  
@@ -64,43 +65,28 @@ with Session(engine) as session:
 # Практический пример
 Разберем пример для таблицы:
 ```sql
-CREATE TABLE test.clients (
-	id uuid DEFAULT gen_random_uuid() NOT NULL,
-	name varchar(255) NULL,
-	email varchar(100) NULL,
-	phone int8 NULL,
-	add_phone _int8 NULL,
-	worksheet_json json NULL,
-	worksheet_jsonb jsonb NULL,
-	CONSTRAINT clients_email_key UNIQUE (email),
-	CONSTRAINT clients_phone_key UNIQUE (phone),
-	CONSTRAINT clients_pkey PRIMARY KEY (id)
+CREATE TABLE [Album]
+(
+    [AlbumId] INTEGER  NOT NULL,
+    [Title] NVARCHAR(160)  NOT NULL,
+    [ArtistId] INTEGER  NOT NULL,
+    CONSTRAINT [PK_Album] PRIMARY KEY  ([AlbumId]),
+    FOREIGN KEY ([ArtistId]) REFERENCES [Artist] ([ArtistId]) 
+		ON DELETE NO ACTION ON UPDATE NO ACTION
 );
 ```
 
 ## Импорт необходимых компонентов
 ```python
-# функция создания движка create_engine
-# базовые типы данных SQL String, Integer, JSON, text 
-from sqlalchemy import create_engine, String, Integer, JSON, text 
-
-# специфичные PostgreSQL типы данных
-from sqlalchemy.dialects.postgresql import UUID, ARRAY, JSONB
-
-# ORM компоненты
-# DeclarativeBase - базовый класс для декларативного стиля моделей
-# Mapped - аннотация типов для полей модели
-# Session - менеджер сессий для работы с БД
+from sqlalchemy import create_engine, String, Integer, JSON, text
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, Session
-
-# Стандартная библиотера python
-import uuid
 ```
 
 ## Создание подключения к БД
 После импорта необходимых компонентов нужно настроить подключение в базе.  
 ```python
-engine = create_engine("postgresql+psycopg2://postgres:postgres@localhost/postgres")
+# создаем движок
+engine = create_engine("sqlite:///C:/Users/user/AppData/Roaming/DBeaverData/workspace6/.metadata/sample-database-sqlite-1/Chinook.db")
 ```
 
 ## Создание базового класса
@@ -110,42 +96,32 @@ engine = create_engine("postgresql+psycopg2://postgres:postgres@localhost/postgr
 - **Единая точка управления** - можно добавить общую логику  
 
 ```python
-class Base(DeclarativeBase):
+# базовый класс, от которого наследуются все модели
+class Base (DeclarativeBase):
     pass
 ```
 
 ## Объявление класса + метаданные
 ```python
-class Client(Base): # создание модели, наследуется от нашего базового класса
-    __tablename__ = "clients" # имя таблицы в БД
-    __table_args__ = {"schema": "test"} # таблица находится в схеме test (не в public)
-    
-    # аннотация типа
-    id: Mapped[uuid.UUID] = mapped_column(
-        UUID, # тип в БД (PostgreSQL UUID)
-        primary_key=True, # это первичный ключ
-        server_default=text("gen_random_uuid()") #значение по умолчанию генерируется на стороне БД
-    )
+# Любая таблица, должна быть наследником Base:
+class Album(Base):  
+    __tablename__ = "Album"
 
-    # Это блок определения полей модели!
-    name: Mapped[str | None] = mapped_column(String(255), nullable=True)
-    email: Mapped[str | None] = mapped_column(String(100), nullable=True, unique=True)
-    phone: Mapped[int | None] = mapped_column(Integer, nullable=True, unique=True)
-    add_phone: Mapped[list[int] | None] = mapped_column(ARRAY(Integer), nullable=True)
-    worksheet_json: Mapped[dict | None] = mapped_column(JSON, nullable=True)
-    worksheet_jsonb: Mapped[dict | None] = mapped_column(JSONB, nullable=True)
+    # mapped_column() — функция для связи аннотации с полем бд
+    AlbumId: Mapped[int] = mapped_column(Integer, primary_key=True)
+    Title: Mapped[str] = mapped_column(String(160))
+    ArtistId: Mapped[int] = mapped_column(Integer)
 ```
 
 ## Выполняем запрос
 ```python
-# Создание сессии для работы с базой данных
+# работа с сессией через контекстный менеджер
 with Session(engine) as session:
-
-    # Выполнение запроса к базе данных
-    clients = session.query(Client).all()
-    
-    # Итерация по всем найденным клиентам
-    for client in clients:
-     # Вывод информации о каждом клиенте
-        print(f"Имя: {client.name}, Email: {client.email}, Телефон: {client.phone}")
+    # логика работы с базой
+    album = session.get(Album, 5)
+ 
+    if album:
+        print(f"Album ID: {album.AlbumId}, Artist ID: {album.ArtistId}, Title: {album.Title}")
+    else:
+        print("Альбом не найден")
 ```
