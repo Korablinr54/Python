@@ -50,10 +50,24 @@ with Session(engine) as session:
     print(f"id: {album.Albumid}, title: {album.Title}")
 ```
 
-Разбор примера:  
-
+Разбор примера:    
 - `with Session(engine) as session:` — Использование менеджера контекста (with) для автоматического управления сессией (гарантирует корректное закрытие).  
 - `stmt = select(Album).where(Album.Title=="Generator of Evil")` — Построение запроса: выбрать все колонки сущности Album, где значение столбца Title строго соответствует заданной строке. 
 - `album = session.scalars(stmt).first()` — Ключевая строка. Метод `scalars()` выполняет запрос и возвращает итератор объектов **Album**, а `first()` извлекает из него первую найденную запись (или None, если совпадений нет).  
 - `print(album.Title)` — Обращение к атрибуту объекта для вывода значения.  
 
+### Возврат списка значений .all()
+
+```python
+with Session(engine) as session:
+    stmt = select(Album)
+    albums = session.scalars(stmt).all() # albums - это список
+    for album in albums: # Перебираем каждый объект в списке
+        print(f"id: {album.Albumid}, title: {album.Title}") # Обращаемся к атрибутам у каждого объекта `album`
+```
+Разбор примера:   
+- `with Session(engine) as session:` - Создание сессии для работы с БД, которая автоматически закроется после выполнения блока.  
+- `stmt = select(Album)` - Формирование SQL-запроса: выбрать все столбцы из таблицы, связанной с моделью Album.  
+- `albums = session.scalars(stmt).all()` - Выполнение запроса и получение ВСЕХ результатов в виде списка объектов Album. `.all()` — преобразует итератор в список всех найденных записей.
+- `for album in albums:`  
+  ____`print(f"id: {album.Albumid}, title: {album.Title}")` - Цикл перебирает каждый объект Album в списке albums. Для каждого объекта происходит обращение к его атрибутам (`.Albumid`, `.Title`).
