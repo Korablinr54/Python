@@ -90,3 +90,13 @@ with Session(engine) as session:
 
 ### Обновление через ORM
 
+Такой способ подходит для точечных правок. 
+```python
+# меняем у выбранной строки данные и коммитим (Через ORM)
+
+with Session(engine) as session:
+    stmt = select(Album).where(Album.Title == "Generator of Evil")
+    row = session.scalars(stmt).first() # выбираем конкретную строку
+    row.Artistid = 666 # устанавливаем новое значение атрибута для строки
+    session.commit() # фиксируем (коммит)
+```
