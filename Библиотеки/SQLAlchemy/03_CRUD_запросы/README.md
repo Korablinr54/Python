@@ -35,14 +35,20 @@ class Album(Base):
 
 ```python
 with Session(engine) as session:    
-    new_album = Album(Title="Generator of Evil", Artistid=9) # 1. создаём объект
-    session.add(new_album)  # 2. добавляем его в сессию
-    session.commit()    # 3. подтверждаем изменения
+    new_album = Album(Title="Generator of Evil", Artistid=9) 
+    session.add(new_album)  
+    session.commit()    
 ```
+
+Разбор примера:  
+- `new_album = Album(Title="Generator of Evil", ArtistId=9)` - Создание экземпляра модели.  
+- `session.add(new_album)` - Добавление в сессию.  
+- `session.commit()` - Фиксация изменений (коммит).  
 
 ## Получение данных (Read)
 
 ### возврат конкретной записи .first()
+
 ```python
 with Session(engine) as session:
     stmt = select(Album).where(Album.Title=="Generator of Evil")
@@ -61,9 +67,9 @@ with Session(engine) as session:
 ```python
 with Session(engine) as session:
     stmt = select(Album)
-    albums = session.scalars(stmt).all() # albums - это список
-    for album in albums: # Перебираем каждый объект в списке
-        print(f"id: {album.Albumid}, title: {album.Title}") # Обращаемся к атрибутам у каждого объекта `album`
+    albums = session.scalars(stmt).all() 
+    for album in albums: 
+        print(f"id: {album.Albumid}, title: {album.Title}") 
 ```
 Разбор примера:   
 - `with Session(engine) as session:` - Создание сессии для работы с БД, которая автоматически закроется после выполнения блока.  
