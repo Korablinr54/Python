@@ -117,3 +117,28 @@ with Session(engine) as session:
 ```
 
 ## Удаление данных (Delete)
+
+### Удаление через ORM
+
+```python
+with Session(engine) as session:
+    stmt = select(Album).where(Album.Title == "Generator of Evil")
+    row = session.scalars(stmt).first()
+
+    session.delete(row)
+    session.commit() # фиксируем (коммит)
+```
+
+### Удаление через execute
+
+```python
+# проверяем - данные удалены
+with Session(engine) as session:
+    stmt = select(Album).where(Album.Title == "Generator of Evil")
+    row = session.scalars(stmt).first()
+
+    if row is None:
+        print("Запись отсуствует в БД")
+    else:
+        print(f"title: {row.Title}, artistid: {row.Artistid}")
+```
