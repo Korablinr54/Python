@@ -19,7 +19,7 @@ CRUD:
 - **Фиксация изменений**: Чтобы запись окончательно сохранилась в базе, выполняется коммит (подтверждение) сессии методом commit(). Этот шаг гарантирует, что транзакция будет завершена.  
 
 У нас есть модель:
-```sh
+```python
 class Album(Base):
     __tablename__ = "Album"
 
@@ -33,7 +33,7 @@ class Album(Base):
 2) добавить его в сессию
 3) подтвердить изменения
 
-```sh
+```python
 with Session(engine) as session:    
     new_album = Album(Title="Generator of Evil", Artistid=9) # 1. создаём объект
     session.add(new_album)  # 2. добавляем его в сессию
@@ -41,3 +41,19 @@ with Session(engine) as session:
 ```
 
 ## Получение данных (Read)
+
+### возврат конкретной записи .first()
+```python
+with Session(engine) as session:
+    stmt = select(Album).where(Album.Title=="Generator of Evil")
+    album = session.scalars(stmt).first()
+    print(f"id: {album.Albumid}, title: {album.Title}")
+```
+
+Разбор примера:  
+
+- `with Session(engine) as session:` — Использование менеджера контекста (with) для автоматического управления сессией (гарантирует корректное закрытие).  
+- `stmt = select(Album).where(Album.Title=="Generator of Evil")` — Построение запроса: выбрать все колонки сущности Album, где значение столбца Title строго соответствует заданной строке. 
+- `album = session.scalars(stmt).first()` — Ключевая строка. Метод `scalars()` выполняет запрос и возвращает итератор объектов **Album**, а `first()` извлекает из него первую найденную запись (или None, если совпадений нет).  
+- `print(album.Title)` — Обращение к атрибуту объекта для вывода значения.  
+
