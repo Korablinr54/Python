@@ -132,13 +132,22 @@ with Session(engine) as session:
 ### Удаление через execute
 
 ```python
+# удаляем запись и проверяем
+with Session(engine) as session:
+    # Создаем и выполняем запрос на удаление
+    stmt = delete(Album).where(Album.Title == "Generator of Evil")
+    result = session.execute(stmt)
+    session.commit()  # не забываем коммитить изменения
+    
+    print(f"Удалено записей: {result.rowcount}")
+
 # проверяем - данные удалены
 with Session(engine) as session:
     stmt = select(Album).where(Album.Title == "Generator of Evil")
     row = session.scalars(stmt).first()
 
     if row is None:
-        print("Запись отсуствует в БД")
+        print("Запись отсутствует в БД")
     else:
-        print(f"title: {row.Title}, artistid: {row.Artistid}")
+        print(f"title: {row.Title}, artistid: {row.ArtistId}")
 ```
