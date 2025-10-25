@@ -100,3 +100,20 @@ with Session(engine) as session:
     row.Artistid = 666 # устанавливаем новое значение атрибута для строки
     session.commit() # фиксируем (коммит)
 ```
+
+### Обновление через execute
+
+Способ подходит для обновления нескольких строк.  
+```python
+with Session(engine) as session:
+    stmt = (
+        update(Album)
+        .where(Album.Title == "Generator of Evil")  # Условие выборки
+        .values(Artistid = 777)                     # Новые значения
+    )
+        
+    session.execute(stmt)  # Выполнение UPDATE запроса
+    session.commit()       # Фиксация изменений в БД
+```
+
+## Удаление данных (Delete)
